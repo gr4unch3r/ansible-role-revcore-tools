@@ -6,7 +6,7 @@ Ansible role to provision [SentinelLabs RevCore Tools](https://github.com/Sentin
 
 ## Requirements
 
-- Clean Windows 10 VM configured for remoting with Ansible ([Guide](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html))
+- Clean Windows 10 VM configured for remoting with Ansible (e.g. [gr4unch3r/windows-10](https://app.vagrantup.com/gr4unch3r/boxes/windows-10))
 - [ansible.windows](https://galaxy.ansible.com/ansible/windows)
 - [community.windows](https://galaxy.ansible.com/community/windows)
 - [chocolatey.chocolatey](https://galaxy.ansible.com/chocolatey/chocolatey)
