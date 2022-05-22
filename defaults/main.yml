@@ -1,0 +1,23 @@
+---
+system_drive: C:\
+gh_raw: "https://raw.githubusercontent.com/"
+revcore_repo: "{{ gh_raw }}SentineLabs/SentinelLabs_RevCore_Tools/master/"
+revcore_tools:
+  - checksum
+  - 7zip.install
+  - procexp
+  - autoruns
+  - tcpview
+  - sysmon
+  - hxd
+  - pebear
+  - pesieve
+  - cmder
+  - nxlog
+  - x64dbg.portable
+  - ollydbg
+  - ida-free
+  - cutter
+  - openjdk11
+  - ghidra
+  - notepadplusplus

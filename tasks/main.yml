@@ -1,0 +1,238 @@
+---
+- name: Setting auto-logon for Admin user
+  community.windows.win_auto_logon:
+    username: vagrant
+    password: vagrant
+
+- name: Setting PowerShell exececution policy to "Unrestricted"
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell
+    name: ExecutionPolicy
+    data: Unrestricted
+    type: string
+
+- name: Unhiding hidden files
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: Hidden
+    data: 1
+    type: dword
+
+- name: Unhiding protected OS files
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: ShowSuperHidden
+    data: 1
+    type: dword
+
+- name: Unhiding file extensions
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: HideFileExt
+    data: 0
+    type: dword
+
+- name: Disabling Bing search
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Search
+    name: BingSearchEnabled
+    data: 0
+    type: dword
+
+- name: Disabling Game Bar Tips
+  ansible.windows.win_regedit:
+    path: HKCU:\Software\Microsoft\GameBar
+    name: ShowStartupPanel
+    data: 0
+    type: dword
+
+- name: Disabling System Restore
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\SystemRestore
+    name: DisableSR
+    data: 1
+    type: dword
+
+- name: Disabling UAC
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+    name: EnableLUA
+    data: 0
+    type: dword
+
+- name: Ensuring SSH server is disabled
+  ansible.windows.win_service:
+    name: sshd
+    state: absent
+
+- name: Removing BgInfo
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+    name: bginfo
+    state: absent
+
+- name: Disabling Windows Updates
+  ansible.windows.win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+    name: NoAutoUpdate
+    data: 1
+    type: dword
+
+- name: Disabling firewall
+  community.windows.win_firewall:
+    state: disabled
+    profiles:
+      - Domain
+      - Private
+      - Public
+
+- name: Disabling Windows Defender
+  ansible.windows.win_shell: Add-MpPreference -ExclusionPath "{{ system_drive }}" -Force
+
+- name: Disabling Action Center
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer
+    name: HideSCAHealth
+    data: 1
+    type: dword
+
+- name: Setting Windows Aero theme
+  ansible.windows.win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ThemeManager
+    name: DllName
+    data: '%WINDIR%\Resources\Themes\aero\Aero.msstyles'
+    type: expandstring
+
+- name: Setting Windows Aero theme
+  ansible.windows.win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ThemeManager
+    name: ThemeActive
+    data: 1
+    type: dword
+
+- name: Setting Windows Aero theme
+  ansible.windows.win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes
+    name: CurrentTheme
+    data: '%WINDIR%\Resources\Themes\aero.theme'
+    type: string
+
+- name: Downloading SentinelOne wallpaper
+  ansible.windows.win_get_url:
+    url: "{{ revcore_repo }}Logo_Wallpaper_Desktop_1920x1080.png"
+    dest: '%PUBLIC%\Pictures\SentinelOne_Wallpaper.png'
+
+- name: Setting SentinelOne wallpaper
+  ansible.windows.win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: Wallpaper
+    data: '%PUBLIC%\Pictures\SentinelOne_Wallpaper.png'
+    type: string
+
+- name: Setting wallpaper style to 'Stretch'
+  ansible.windows.win_regedit:
+    path: HKCU:\Control Panel\Desktop
+    name: WallpaperStyle
+    data: 2
+    type: dword
+
+- name: Setting background color to black
+  ansible.windows.win_regedit:
+    path: HKCU:\Control Panel\Colors
+    name: Background
+    data: '0 0 0'
+    type: string
+
+- name: Refresh registry to make changes take effect
+  ansible.windows.win_shell: RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
+
+- name: Installing SentinelLabs RevCore Tools
+  chocolatey.chocolatey.win_chocolatey:
+    name: "{{ item }}"
+    state: present
+    allow_empty_checksums: true
+  with_items: "{{ revcore_tools }}"
+
+- name: Installing Python
+  chocolatey.chocolatey.win_chocolatey:
+    name: python3
+    package_params: "/NoLockdown"
+    state: present
+
+- name: Installing PeStudio
+  chocolatey.chocolatey.win_chocolatey:
+    name: pestudio
+    ignore_checksums: true
+    state: present
+
+- name: Refreshing environment to add Python to PATH
+  ansible.windows.win_shell: refreshenv
+
+- name: Upgrading pip
+  ansible.windows.win_shell: python -m pip install --upgrade pip
+
+- name: Upgrading setuptools
+  ansible.windows.win_shell: python -m pip install --upgrade setuptools
+
+- name: Installing Python packages
+  ansible.windows.win_shell: python -m pip install pefile yara
+
+- name: Creating desktop shortcut for x64dbg
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\x64dbg.portable\tools\release\x64\x64dbg.exe'
+    dest: '%PUBLIC%\Desktop\x64dbg.lnk'
+
+- name: Creating desktop shortcut for x32dbg
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\x64dbg.portable\tools\release\x32\x32dbg.exe'
+    dest: '%PUBLIC%\Desktop\x32dbg.lnk'
+
+- name: Creating desktop shortcut for OllyDbg
+  community.windows.win_shortcut:
+    src: '%PROGRAMFILES(X86)%\OllyDbg\OLLYDBG.EXE'
+    dest: '%PUBLIC%\Desktop\OllyDbg.lnk'
+
+- name: Creating desktop shortcut for HxD
+  community.windows.win_shortcut:
+    src: '%PROGRAMFILES%\HxD\HxD.exe'
+    dest: '%PUBLIC%\Desktop\HxD.lnk'
+
+- name: Creating desktop shortcut for PE-bear
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\pebear\tools\PE-bear.exe'
+    dest: '%PUBLIC%\Desktop\PE-bear.lnk'
+
+- name: Creating desktop shortcut for PeStudio
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\PeStudio\tools\pestudio\pestudio.exe'
+    dest: '%PUBLIC%\Desktop\PeStudio.lnk'
+
+- name: Creating desktop shortcut for Process Explorer
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\procexp\tools\procexp.exe'
+    dest: '%PUBLIC%\Desktop\Process Explorer.lnk'
+
+- name: Creating desktop shortcut for Autoruns
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\AutoRuns\tools\Autoruns.exe'
+    dest: '%PUBLIC%\Desktop\Autoruns.lnk'
+
+- name: Creating desktop shortcut for Sysmon
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\sysmon\tools\Sysmon.exe'
+    dest: '%PUBLIC%\Desktop\Sysmon.lnk'
+
+- name: Creating desktop shortcut for TCPView
+  community.windows.win_shortcut:
+    src: '%PROGRAMDATA%\chocolatey\lib\TcpView\Tools\Tcpview.exe'
+    dest: '%PUBLIC%\Desktop\TCPView.lnk'
+
+- name: Creating desktop shortcut for Notepad++
+  community.windows.win_shortcut:
+    src: '%PROGRAMFILES%\Notepad++\notepad++.exe'
+    dest: '%PUBLIC%\Desktop\Notepad++.lnk'
+
+- name: Creating desktop shortcut for Cmder
+  community.windows.win_shortcut:
+    src: '%HOMEDRIVE%\tools\Cmder\Cmder.exe'
+    dest: '%PUBLIC%\Desktop\Cmder.lnk'

@@ -1,0 +1,14 @@
+galaxy_info:
+  role_name: revcore_tools
+  author: gr4unch3r
+  description: Provision a Windows 10 VM with SentinelLabs RevCore Tools
+  license: MIT
+  min_ansible_version: '2.1'
+  platforms:
+    - name: Windows
+      versions:
+        - all
+  galaxy_tags:
+    - windows
+    - security
+dependencies: []
