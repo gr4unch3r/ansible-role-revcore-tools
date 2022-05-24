@@ -10,6 +10,7 @@ ENV["VAGRANT_OLD_ENV_OBJC_DISABLE_INITIALIZE_FORK_SAFETY"] = "YES"
 
 Vagrant.configure("2") do |config|
     config.vm.box = "gr4unch3r/windows-10"
+    config.vm.box_version = "10.0.17763"
     config.vm.provider :virtualbox do |v|
       v.gui = false
       v.check_guest_additions = false
