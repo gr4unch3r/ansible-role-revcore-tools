@@ -84,7 +84,7 @@
 
 - name: Disabling WinDefend service
   ansible.windows.win_regedit:
-    path: HKLM:\SYSTEM\CurrentControlSet\services\WinDefend
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\WinDefend
     name: Start
     data: 4
     type: dword
