@@ -173,13 +173,13 @@
     file_type: directory
     recurse: false
     use_regex: true
-    patterns: "^openjdk-*"
+    patterns: "openjdk-*"
   register: openjdk_path
 
 - name: Adding JAVA_HOME envvar
   ansible.windows.win_path:
     name: JAVA_HOME
-    elements: "{{ openjdk_path.path }}"
+    elements: "{{ openjdk_path.files[0].path }}"
 
 - name: Installing Python
   chocolatey.chocolatey.win_chocolatey:
@@ -222,7 +222,7 @@
 
 - name: Creating Ghidra desktop shortcut
   community.windows.win_shortcut:
-    src: "{{ ghidra_path.path }}"
+    src: "{{ ghidra_path.files[0].path }}"
     dest: C:\Users\Public\Desktop\Ghidra.lnk
 
 - name: Creating x64dbg desktop shortcut
