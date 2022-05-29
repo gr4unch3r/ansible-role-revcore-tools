@@ -179,7 +179,8 @@
 - name: Adding JAVA_HOME envvar
   ansible.windows.win_path:
     name: JAVA_HOME
-    elements: "{{ openjdk_path.files[0].path }}"
+    elements: "{{ item.path }}"
+  with_items: "{{ openjdk_path.files }}"
 
 - name: Installing Python
   chocolatey.chocolatey.win_chocolatey:
@@ -222,8 +223,9 @@
 
 - name: Creating Ghidra desktop shortcut
   community.windows.win_shortcut:
-    src: "{{ ghidra_path.files[0].path }}"
+    src: "{{ item.path }}"
     dest: C:\Users\Public\Desktop\Ghidra.lnk
+  with_items: "{{ ghidra_path.files }}"
 
 - name: Creating x64dbg desktop shortcut
   community.windows.win_shortcut:
