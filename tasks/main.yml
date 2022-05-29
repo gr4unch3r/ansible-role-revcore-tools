@@ -82,14 +82,17 @@
       - Private
       - Public
 
+- name: Granting Ansible user the SeTcbPrivilege right
+  ansible.windows.win_user_right:
+    name: SeTcbPrivilege
+    users: "{{ ansible_user }}"
+    action: add
+
 - name: Stopping and disabling WinDefend service
   ansible.windows.win_service:
     name: WinDefend
     start_mode: disabled
     state: stopped
-  become: true
-  become_user: System
-  become_method: runas
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
