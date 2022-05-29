@@ -1,9 +1,4 @@
 ---
-- name: Installing updates
-  ansible.windows.win_updates:
-    category_names: '*'
-    reboot: true
-
 - name: Activating the virtual machine
   ansible.windows.win_command: slmgr.vbs /ato
 
@@ -173,7 +168,7 @@
     data: 0 0 0
     type: string
 
-- name: Rebooting machine
+- name: Rebooting machine to make changes take effect
   ansible.windows.win_reboot:
 
 - name: Installing SentinelLabs RevCore Tools
@@ -301,5 +296,5 @@
     src: C:\tools\Cmder\Cmder.exe
     dest: C:\Users\Public\Desktop\Cmder.lnk
 
-- name: Rebooting machine
+- name: Rebooting machine to make changes take effect
   ansible.windows.win_reboot:
