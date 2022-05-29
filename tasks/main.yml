@@ -88,6 +88,9 @@
     name: Start
     data: 4
     type: dword
+  become: true
+  become_user: SYSTEM
+  become_method: runas
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
