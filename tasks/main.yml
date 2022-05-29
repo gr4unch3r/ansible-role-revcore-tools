@@ -82,14 +82,12 @@
       - Private
       - Public
 
-- name: Stopping and disabling WinDefend service
-  ansible.windows.win_service:
-    name: WinDefend
-    start_mode: disabled
-    state: stopped
-  become: true
-  become_user: SYSTEM
-  become_method: runas
+- name: Disabling WinDefend service
+  ansible.windows.win_regedit:
+    path: HKLM:\SYSTEM\CurrentControlSet\services\WinDefend
+    name: Start
+    data: 4
+    type: dword
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
