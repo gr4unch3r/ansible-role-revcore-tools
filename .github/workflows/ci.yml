@@ -8,6 +8,8 @@ jobs:
   test:
     name: vagrant-test
     runs-on: macos-10.15
+    env:
+      OBJC_DISABLE_INITIALIZE_FORK_SAFETY: YES
     steps:
       - name: Checkout
         uses: actions/checkout@v3
