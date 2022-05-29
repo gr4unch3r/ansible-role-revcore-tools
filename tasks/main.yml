@@ -82,13 +82,19 @@
       - Private
       - Public
 
-- name: Setting registry permissions for vagrant user
+- name: Setting registry permissions for Ansible user
   ansible.windows.win_acl:
     path: HKLM:\SYSTEM\CurrentControlSet\Services\WinDefend
-    user: vagrant
+    user: "{{ ansible_user }}"
     rights: FullControl
     type: allow
     state: present
+
+- name: Setting system permissions for Ansible user
+  ansible.windows.win_user_right:
+    name: SeTcbPrivilege
+    users: "{{ ansible_user }}"
+    action: add
 
 - name: Rebooting machine to make changes take effect
   ansible.windows.win_reboot:
@@ -99,6 +105,9 @@
     name: Start
     data: 4
     type: dword
+  become: true
+  become_user: "{{ ansible_user }}"
+  become_method: runas
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
