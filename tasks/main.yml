@@ -87,6 +87,9 @@
     name: WinDefend
     start_mode: disabled
     state: stopped
+  become: true
+  become_user: System
+  become_method: runas
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
