@@ -5,7 +5,7 @@
     password: vagrant
 
 - name: Setting exececution policy to "Unrestricted"
-  ansible.windows.win_shell: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
+  ansible.windows.win_shell: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force
 
 - name: Unhiding protected OS files
   ansible.windows.win_regedit:
@@ -82,32 +82,25 @@
       - Private
       - Public
 
-- name: Setting registry permissions for Ansible user
-  ansible.windows.win_acl:
-    path: HKLM:\SYSTEM\CurrentControlSet\Services\WinDefend
-    user: "{{ ansible_user }}"
-    rights: FullControl
-    type: allow
+- name: Installing psexec
+  chocolatey.chocolatey.win_chocolatey:
+    name: psexec
     state: present
 
-- name: Setting system permissions for Ansible user
-  ansible.windows.win_user_right:
-    name: SeTcbPrivilege
-    users: "{{ ansible_user }}"
-    action: add
-
-- name: Rebooting machine to make changes take effect
-  ansible.windows.win_reboot:
+- name: Stopping WinDefend service
+  community.windows.win_psexec:
+    command: Stop-Service WinDefend -Force
+    system: true
 
 - name: Disabling WinDefend service
-  ansible.windows.win_regedit:
-    path: HKLM:\SYSTEM\CurrentControlSet\Services\WinDefend
-    name: Start
-    data: 4
-    type: dword
-  become: true
-  become_user: "{{ ansible_user }}"
-  become_method: runas
+  community.windows.win_psexec:
+    command: Set-Service WinDefend -StartupType Disabled -Force
+    system: true
+
+- name: Uninstalling psexec
+  chocolatey.chocolatey.win_chocolatey:
+    name: psexec
+    state: absent
 
 - name: Disabling Defender
   ansible.windows.win_regedit:
@@ -183,6 +176,9 @@
     name: Background
     data: 0 0 0
     type: string
+
+- name: Rebooting machine to make changes take effect
+  ansible.windows.win_reboot:
 
 - name: Installing SentinelLabs RevCore Tools
   chocolatey.chocolatey.win_chocolatey:
