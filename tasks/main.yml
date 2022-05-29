@@ -1,7 +1,4 @@
 ---
-- name: Activating the virtual machine
-  ansible.windows.win_command: slmgr.vbs /ato
-
 - name: Setting auto-logon
   ansible.windows.win_regedit:
     path: HKLM:Software\Microsoft\Windows NT\CurrentVersion\Winlogon
