@@ -89,15 +89,15 @@
 
 - name: Stopping WinDefend service
   community.windows.win_psexec:
-    command: Stop-Service WinDefend -Force
+    command: cmd.exe /c net stop WinDefend
     system: true
 
 - name: Disabling WinDefend service
   community.windows.win_psexec:
-    command: Set-Service WinDefend -StartupType Disabled -Force
+    command: cmd.exe /c sc config WinDefend start= disabled
     system: true
 
-- name: Uninstalling psexec
+- name: Removing psexec
   chocolatey.chocolatey.win_chocolatey:
     name: psexec
     state: absent
