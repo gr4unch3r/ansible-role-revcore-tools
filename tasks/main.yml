@@ -157,30 +157,14 @@
     data: 0 0 0
     type: string
 
+- name: Rebooting machine to make changes take effect
+  ansible.windows.win_reboot:
+
 - name: Installing SentinelLabs RevCore Tools
   chocolatey.chocolatey.win_chocolatey:
     name: "{{ item }}"
     state: latest
   with_items: "{{ revcore_tools }}"
-
-- name: Registering OpenJDK installation directory
-  ansible.windows.win_find:
-    paths:
-    - C:\Program Files\OpenJDK
-    file_type: directory
-    recurse: false
-    use_regex: true
-    patterns: "openjdk-*"
-  register: openjdk_path
-
-- name: Adding JAVA_HOME envvar
-  ansible.windows.win_path:
-    name: JAVA_HOME
-    elements: "{{ item.path }}"
-  with_items: "{{ openjdk_path.files }}"
-
-- name: Rebooting machine to make changes take effect
-  ansible.windows.win_reboot:
 
 - name: Installing Python
   chocolatey.chocolatey.win_chocolatey:
@@ -215,20 +199,6 @@
 
 - name: Installing Python packages
   ansible.windows.win_shell: python -m pip install pefile yara
-
-- name: Registering ghidraRun.bat location
-  ansible.windows.win_find:
-    paths:
-    - C:\ProgramData\chocolatey\lib\ghidra\tools
-    recurse: true
-    patterns: ghidraRun.bat
-  register: ghidra_path
-
-- name: Creating Ghidra desktop shortcut
-  community.windows.win_shortcut:
-    src: "{{ item.path }}"
-    dest: C:\Users\Public\Desktop\Ghidra.lnk
-  with_items: "{{ ghidra_path.files }}"
 
 - name: Creating x64dbg desktop shortcut
   community.windows.win_shortcut:
