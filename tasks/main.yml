@@ -261,13 +261,13 @@
     src: C:\tools\Cmder\Cmder.exe
     dest: C:\Users\Public\Desktop\Cmder.lnk
 
-- name: Setting internal network gateway for inetsim routing
+- name: Setting internal network gateway for network traffic capture
   ansible.windows.win_shell: Remove-NetIPAddress 192.168.56.103 -Confirm:$false
 
-- name: Setting internal network gateway for inetsim routing
+- name: Setting internal network gateway for network traffic capture
   ansible.windows.win_shell: New-NetIPAddress -InterfaceAlias 'Ethernet 2' -IPAddress '192.168.56.103' -PrefixLength 24 -DefaultGateway '192.168.56.102'
 
-- name: Setting DNS for inetsim routing
+- name: Setting DNS for network traffic capture
   ansible.windows.win_dns_client:
     adapter_names: 'Ethernet 2'
     dns_servers: 192.168.56.102
