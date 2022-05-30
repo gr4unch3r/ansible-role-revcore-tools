@@ -20,3 +20,4 @@ revcore_tools:
   - openjdk11
   - ghidra
   - notepadplusplus
+  - python
